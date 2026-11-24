@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio-to-Poster Agent — Turn any portfolio into poster ideas</title>
+<meta name="description" content="Paste a portfolio or website URL. The agent reads the site and generates 5 poster concepts, 3 social captions and a 7-day content plan. Free, BYOK, no server.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f2040'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23ffd166' font-family='sans-serif' font-weight='bold'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --navy:#0f2040; --blue:#1256a0; --violet:#6c5ce7; --ink:#14142b; --muted:#5b6472;
+    --line:#e4e8ef; --bg:#f6f8fb; --card:#ffffff; --good:#1d9e80; --bad:#c0392b; --amber:#b7791f;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  a{color:var(--blue)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header.hero{background:linear-gradient(135deg,#0f2040 0%,#123a6e 55%,#6c5ce7 130%);color:#fff;padding:56px 0 44px}
+  header.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.12;margin:0 0 12px;letter-spacing:-.5px}
+  header.hero h1 em{font-style:normal;color:#ffd166}
+  header.hero p{font-size:17px;opacity:.92;max-width:640px;margin:0 0 20px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px}
+  .badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+  main{padding:28px 0 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(15,32,64,.05)}
+  .card h2{margin:0 0 4px;font-size:20px}
+  .card h2 .stepnum{display:inline-block;background:var(--navy);color:#fff;font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;margin-right:8px;vertical-align:2px}
+  .hint{color:var(--muted);font-size:14px;margin:0 0 14px}
+  label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+  input[type=text],input[type=password],input[type=url],textarea,select{width:100%;padding:12px 14px;font-size:15px;border:1px solid #c9d2de;border-radius:10px;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+  textarea{resize:vertical;min-height:120px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.row{grid-template-columns:1fr}}
+  .btn{display:inline-block;border:0;border-radius:999px;padding:13px 26px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:#0d4a8c}
+  .btn-primary:disabled{background:#9db4cc;cursor:wait}
+  .btn-ghost{background:#eef2f7;color:var(--navy);border:1px solid var(--line)}
+  .btn-ghost:hover{background:#e2e9f2}
+  .btn-sm{padding:7px 14px;font-size:13px}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .keynote{background:#eef6ff;border:1px solid #cfe4fb;border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
+  .keynote b{color:var(--navy)}
+  .keynote code{background:#fff;border:1px solid #dbe6f2;border-radius:6px;padding:1px 6px;font-size:13px}
+  .saved{color:var(--good);font-weight:700;font-size:14px}
+  .log{background:#0f2040;color:#d7e3f4;border-radius:12px;padding:14px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;display:none;margin-top:14px}
+  .log.show{display:block}
+  .log .ok{color:#7be3c3}.log .err{color:#ff9d9d}.log .dim{color:#8fa8c8}
+  .error{background:#fdecea;border:1px solid #f5c6c0;color:#7a1f16;border-radius:10px;padding:12px 14px;font-size:14px;display:none;margin-top:14px}
+  .error.show{display:block}
+  .sampletag{display:inline-block;background:#fff3d6;color:#7a5b00;border:1px solid #f0d48a;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+  .brandline{font-size:15px}
+  .brandline b{color:var(--navy)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{background:#eef2f7;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:13px}
+  .concept{border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+  .concept h3{margin:0 0 2px;font-size:18px}
+  .concept .pat{font-size:12px;font-weight:700;color:var(--violet);text-transform:uppercase;letter-spacing:.4px}
+  .concept blockquote{margin:12px 0;font-size:21px;font-weight:800;line-height:1.25;color:var(--navy);border-left:4px solid var(--violet);padding-left:12px}
+  .swatches{display:flex;gap:8px;margin:10px 0}
+  .sw{width:44px;height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.12);position:relative}
+  .sw span{position:absolute;left:0;right:0;bottom:-18px;text-align:center;font-size:10px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .swwrap{margin-bottom:22px}
+  .concept p{margin:6px 0;font-size:14.5px}
+  .concept p b{color:var(--navy)}
+  .captionbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px;background:#fbfcfe}
+  .captionbox p{margin:0 0 8px;font-size:15px}
+  .captionbox .tags{color:var(--blue);font-size:14px}
+  table.plan{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
+  table.plan th,table.plan td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+  table.plan th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  details{margin-top:14px}
+  details summary{cursor:pointer;font-weight:700;color:var(--blue);font-size:14px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  @media(max-width:640px){.steps{grid-template-columns:1fr 1fr}}
+  .step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .step .n{font-size:22px;font-weight:800;color:var(--violet)}
+  .step p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+  .step b{color:var(--ink)}
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--muted);font-size:13.5px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Portfolio-to-Poster <em>Agent</em></h1>
+    <p>Paste any portfolio or website URL. The agent reads the site, understands the brand, and generates 5 poster concepts, 3 ready-to-post captions and a 7-day content plan — in about a minute.</p>
+    <div class="badges">
+      <span class="badge">Free forever</span>
+      <span class="badge">Bring your own API key</span>
+      <span class="badge">No server — runs in your browser</span>
+      <span class="badge">No sign-up</span>
+      <span class="badge">No auto-posting</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- STEP 1 : API KEY (the one config spot) -->
+  <section class="card" id="config-card">
+    <h2><span class="stepnum">1</span>Your API key — one config spot</h2>
+    <p class="hint">We provide <b>no</b> API key. Paste your own key below and the agent works with <b>any</b> model — Gemini, Groq, or any OpenAI-compatible API. Get a free key from your provider's site (e.g. Google AI Studio for Gemini, console.groq.com for Groq).</p>
+    <div class="row">
+      <div>
+        <label for="provider">Provider</label>
+        <select id="provider">
+          <option value="gemini">Gemini (Google AI Studio — free)</option>
+          <option value="groq">Groq (free tier)</option>
+          <option value="openai">OpenAI-compatible (custom base URL)</option>
+        </select>
+      </div>
+      <div>
+        <label for="model">Model</label>
+        <input type="text" id="model" value="gemini-2.5-flash" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+    <div id="baseurl-row" class="hidden">
+      <label for="baseurl">API base URL (OpenAI-compatible only)</label>
+      <input type="text" id="baseurl" placeholder="https://api.example.com/v1" autocomplete="off" spellcheck="false">
+    </div>
+    <label for="apikey">API key</label>
+    <input type="password" id="apikey" placeholder="Paste your key here — it stays in YOUR browser only" autocomplete="off" spellcheck="false">
+    <div class="btnrow">
+      <button class="btn btn-primary btn-sm" id="save-key">Save key in this browser</button>
+      <button class="btn btn-ghost btn-sm" id="clear-key">Clear saved key</button>
+      <span id="key-status" class="saved hidden">Key saved in this browser ✓</span>
+    </div>
+    <div class="keynote">
+      <b>Privacy:</b> your key is stored only in this browser's <code>localStorage</code>. It is sent <b>only</b> to the provider you selected above — never to us, never to any other server. There is no backend. Clear it anytime with the button above.
+    </div>
+  </section>
+
+  <!-- STEP 2 : URL -->
+  <section class="card">
+    <h2><span class="stepnum">2</span>Portfolio / website URL</h2>
+    <p class="hint">Any public portfolio, agency or business site. The agent reads it through a free public reader (<code>r.jina.ai</code>) — if the site blocks reading, paste its text manually below instead.</p>
+    <label for="siteurl">Website URL</label>
+    <input type="url" id="siteurl" placeholder="https://your-portfolio.com" autocomplete="off" spellcheck="false">
+    <div class="btnrow">
+      <button class="btn btn-primary" id="analyze">✦ Generate poster ideas</button>
+      <button class="btn btn-ghost" id="sample">Preview with sample output (no key needed)</button>
+    </div>
+    <details id="manual-wrap">
+      <summary>Site won't load? Paste the site text manually instead</summary>
+      <label for="manual-text">Paste the website's text (About page, services, homepage copy — anything)</label>
+      <textarea id="manual-text" placeholder="Paste the site's text here, then press 'Generate poster ideas' — the agent will use this instead of fetching the URL."></textarea>
+    </details>
+    <div class="log" id="log"></div>
+    <div class="error" id="error"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="card hidden" id="results-card">
+    <div id="sample-badge"></div>
+    <h2>Your poster kit</h2>
+    <p class="hint" id="results-sub"></p>
+    <div id="brand-box"></div>
+    <h3 style="margin-top:22px">5 poster concepts</h3>
+    <div id="concepts"></div>
+    <h3 style="margin-top:26px">3 ready-to-post captions</h3>
+    <div id="captions"></div>
+    <h3 style="margin-top:26px">7-day content plan</h3>
+    <div id="weekplan"></div>
+    <div class="btnrow">
+      <button class="btn btn-ghost btn-sm" id="copy-all">Copy everything as text</button>
+      <button class="btn btn-ghost btn-sm" id="start-over">Start over with another site</button>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="card">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><p><b>Paste your key</b><br>Once, in the box above. Any provider, any model.</p></div>
+      <div class="step"><div class="n">2</div><p><b>Paste a URL</b><br>The agent reads the site — services, style, audience.</p></div>
+      <div class="step"><div class="n">3</div><p><b>AI analyses</b><br>Your key calls your provider directly from your browser.</p></div>
+      <div class="step"><div class="n">4</div><p><b>Copy &amp; design</b><br>5 concepts, 3 captions, 7 days of ideas. Copy any of them.</p></div>
+    </div>
+    <p class="hint" style="margin-top:16px">What it does <b>not</b> do: it never posts anything for you, never logs into your social accounts, and never stores your key or your sites anywhere except your own browser.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Portfolio-to-Poster Agent — an open-source tool by <b>VisualFizz</b> (Md Ayub Mondol). Free forever, MIT licensed.
+    Reader: <code>r.jina.ai</code> public reader proxy (free tier, may rate-limit — then paste the text manually). Your API key is yours: it goes only to the provider you choose.
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   Portfolio-to-Poster Agent — single-file demo. No server, no build.
+   - The API key lives ONLY in this browser (localStorage) and is sent
+     ONLY to the provider the user selected (Gemini / Groq / OpenAI-
+     compatible). We never see it, never store it anywhere else.
+   - Site text is fetched through the free public reader r.jina.ai.
+     If it fails (site blocks readers / rate limit), the user pastes
+     the text manually instead. Nothing is uploaded to our servers —
+     there are no servers.
+   ===================================================================== */
+
+const PROVIDERS = {
+  gemini: { label: "Gemini", defaultModel: "gemini-2.5-flash" },
+  groq:   { label: "Groq",   defaultModel: "llama-3.3-70b-versatile", base: "https://api.groq.com/openai/v1" },
+  openai: { label: "OpenAI-compatible", defaultModel: "gpt-4o-mini", base: "" }
+};
+
+const SYSTEM_PROMPT = `You are the Portfolio-to-Poster Agent. You read a portfolio or business website and turn it into ready-to-design poster concepts and social content.
+
+RULES
+- Use ONLY facts found in the website text below. Never invent services, clients, prices, awards, locations or numbers the site does not state. If a fact is missing, say so in that field instead of guessing.
+- Every poster concept must be genuinely different from the others: pick a different layout pattern for each one. Never repeat the same headline idea twice.
+- Poster design DNA (follow this — it is what makes the concepts premium, not templated):
+  * The headline is the hero: oversized, extra-bold, stacked over 2-3 lines. One accent word may be serif/italic/outline — never more than one.
+  * Tight palette: 2-3 colors maximum per poster (one ground, one headline color, one accent). Never a rainbow.
+  * Pick ONE pattern per concept: (1) oversized condensed headline over a duotone photo, (2) floating glossy 3D icon chips, (3) cinematic dark with neon glow, (4) editorial minimal on cream, (5) gradient mesh, (6) cutout portrait + sticker badges, (7) tilted diagonal composition with grain.
+  * Real brand colors for any logo mentioned. Footer on every poster: the brand's own website.
+- Captions: simple and professional. Short sentences, plain words. NO engagement-bait questions ("how did you like it?", "comment below"), no fluffy words, no unnecessary names.
+- Social images are 4:5 portrait; thumbnails 1:1 square.
+
+OUTPUT — STRICT JSON ONLY. No markdown fences, no commentary, no text outside the JSON object. Use exactly this shape:
+{
+  "brand": {
+    "name": "string — brand/person name from the site",
+    "whatTheyDo": "string — one sentence, from the site",
+    "services": ["string", "string", "string"],
+    "audience": "string — who the site speaks to",
+    "tone": "string — e.g. bold and playful, calm and premium",
+    "website": "string — the URL given"
+  },
+  "posterConcepts": [
+    {
+      "title": "string — short concept name, e.g. 'The Big Promise'",
+      "headline": "string — the exact words that go on the poster",
+      "pattern": "string — which of the 7 patterns, e.g. 'Oversized condensed headline'",
+      "layout": "string — 1-2 sentences: where headline, photo, badge, CTA sit",
+      "colors": ["#HEX", "#HEX", "#HEX"],
+      "visual": "string — 1-2 sentences: the photo/illustration idea, tied to a real fact from the site",
+      "why": "string — one sentence: why this concept fits this brand"
+    }
+  ],
+  "captions": [
+    { "text": "string — ready-to-post caption, 2-4 short sentences", "hashtags": ["#Tag", "#Tag"] },
+    { "text": "string", "hashtags": ["#Tag", "#Tag"] },
+    { "text": "string", "hashtags": ["#Tag", "#Tag"] }
+  ],
+  "weekPlan": [
+    { "day": "Day 1", "idea": "string — one content idea", "format": "string — e.g. 'Poster 4:5' or 'Reel 9:16' or 'Carousel'" },
+    { "day": "Day 2", "idea": "string", "format": "string" },
+    { "day": "Day 3", "idea": "string", "format": "string" },
+    { "day": "Day 4", "idea": "string", "format": "string" },
+    { "day": "Day 5", "idea": "string", "format": "string" },
+    { "day": "Day 6", "idea": "string", "format": "string" },
+    { "day": "Day 7", "idea": "string", "format": "string" }
+  ]
+}
+
+Generate exactly 5 poster concepts, exactly 3 captions, exactly 7 week-plan days.`;
+
+const $ = id => document.getElementById(id);
+const providerEl = $("provider"), modelEl = $("model"), baseEl = $("baseurl"),
+      keyEl = $("apikey"), urlEl = $("siteurl"), manualEl = $("manual-text"),
+      logEl = $("log"), errEl = $("error");
+
+/* ---------- config: load saved key/provider (localStorage only) ---------- */
+function loadConfig(){
+  const p = localStorage.getItem("ppa_provider") || "gemini";
+  providerEl.value = PROVIDERS[p] ? p : "gemini";
+  modelEl.value = localStorage.getItem("ppa_model") || PROVIDERS[providerEl.value].defaultModel;
+  baseEl.value = localStorage.getItem("ppa_base") || "";
+  const k = localStorage.getItem("ppa_key");
+  if (k) { keyEl.value = k; $("key-status").classList.remove("hidden"); }
+  syncProviderUI();
+}
+function syncProviderUI(){
+  const p = providerEl.value;
+  $("baseurl-row").classList.toggle("hidden", p !== "openai");
+  if (!modelEl.value || Object.values(PROVIDERS).some(v => v.defaultModel === modelEl.value)) {
+    modelEl.value = PROVIDERS[p].defaultModel;
+  }
+}
+providerEl.addEventListener("change", syncProviderUI);
+$("save-key").addEventListener("click", () => {
+  const k = keyEl.value.trim();
+  if (!k) { showError("Paste your API key first."); return; }
+  localStorage.setItem("ppa_key", k);
+  localStorage.setItem("ppa_provider", providerEl.value);
+  localStorage.setItem("ppa_model", modelEl.value.trim());
+  localStorage.setItem("ppa_base", baseEl.value.trim());
+  $("key-status").classList.remove("hidden");
+  hideError();
+});
+$("clear-key").addEventListener("click", () => {
+  ["ppa_key","ppa_provider","ppa_model","ppa_base"].forEach(k => localStorage.removeItem(k));
+  keyEl.value = ""; $("key-status").classList.add("hidden");
+});
+
+/* ---------- logging / errors ---------- */
+function log(msg, cls){
+  logEl.classList.add("show");
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  logEl.appendChild(line);
+}
+function showError(msg){ errEl.textContent = msg; errEl.classList.add("show"); }
+function hideError(){ errEl.classList.remove("show"); errEl.textContent = ""; }
+
+/* ---------- site reading (free public reader, with manual fallback) ---------- */
+function cleanSiteText(text){
+  const out = [];
+  for (const raw of text.split("\n")) {
+    const s = raw.trim();
+    if (!s) continue;
+    if (s.startsWith("![") || s.startsWith("[![")) continue;
+    const stripped = s.replace(/!\[.*?\]\(.*?\)/g, "").replace(/\[.*?\]\(.*?\)/g, "").replace(/[#>*\-| ]/g, "");
+    if ((stripped.match(/[A-Za-z0-9]{2,}/g) || []).length < 3) continue;
+    if (["site navigation","social links","search","newsletter"].includes(s.toLowerCase())) continue;
+    out.push(raw);
+  }
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").slice(0, 6000);
+}
+async function fetchSiteText(url){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 30000);
+  try {
+    const res = await fetch("https://r.jina.ai/" + url, { signal: ctrl.signal });
+    if (!res.ok) throw new Error("reader returned HTTP " + res.status);
+    const text = await res.text();
+    if (!text || text.length < 200) throw new Error("reader returned almost no text (site may block readers)");
+    return cleanSiteText(text);
+  } finally { clearTimeout(t); }
+}
+
+/* ---------- LLM calls (key goes ONLY to the chosen provider) ---------- */
+async function callGemini(key, model, system, user){
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(key);
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ system_instruction: { parts: [{ text: system }] }, contents: [{ parts: [{ text: user }] }] }) });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error("Gemini error " + res.status + (res.status === 400 || res.status === 403 ? " — check your API key and model name." : "") + (body ? " " + body.slice(0, 200) : ""));
+  }
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Gemini returned no text.");
+  return text;
+}
+async function callOpenAICompatible(base, key, model, system, user){
+  const url = base.replace(/\/+$/, "") + "/chat/completions";
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+    body: JSON.stringify({ model, messages: [{ role: "system", content: system }, { role: "user", content: user }], temperature: 0.7 }) });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error("Provider error " + res.status + (res.status === 401 ? " — check your API key." : "") + (body ? " " + body.slice(0, 200) : ""));
+  }
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Provider returned no text.");
+  return text;
+}
+function parseJSON(text){
+  const cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  const start = cleaned.indexOf("{"), end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("The model did not return JSON. Try again.");
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+/* ---------- rendering ---------- */
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function copyBtn(text, label){
+  return `<button class="btn btn-ghost btn-sm" data-copy="${esc(text)}">${esc(label || "Copy")}</button>`;
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]");
+  if (!b) return;
+  try { await navigator.clipboard.writeText(b.getAttribute("data-copy")); b.textContent = "Copied ✓"; setTimeout(() => b.textContent = "Copy", 1500); }
+  catch { b.textContent = "Copy failed — select manually"; }
+});
+function renderResults(data, isSample){
+  $("results-card").classList.remove("hidden");
+  $("sample-badge").innerHTML = isSample ? `<span class="sampletag">SAMPLE OUTPUT — generated from mdayubmondol.com (no key needed for this preview)</span>` : "";
+  $("results-sub").textContent = data.brand?.website ? ("Source: " + data.brand.website) : "";
+  const b = data.brand || {};
+  $("brand-box").innerHTML = `
+    <p class="brandline"><b>${esc(b.name || "—")}</b> — ${esc(b.whatTheyDo || "")}</p>
+    <div class="chips">${(b.services || []).map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
+    <p class="brandline" style="margin-top:10px">Audience: ${esc(b.audience || "—")} · Tone: ${esc(b.tone || "—")}</p>`;
+  $("concepts").innerHTML = (data.posterConcepts || []).map((c, i) => `
+    <div class="concept">
+      <div class="pat">${esc(c.pattern || "Poster")} · Concept ${i + 1}</div>
+      <h3>${esc(c.title || "")}</h3>
+      <blockquote>${esc(c.headline || "")}</blockquote>
+      <div class="swwrap"><div class="swatches">${(c.colors || []).map(col => `<div class="sw" style="background:${esc(col)}"><span>${esc(col)}</span></div>`).join("")}</div></div>
+      <p><b>Layout:</b> ${esc(c.layout || "")}</p>
+      <p><b>Visual:</b> ${esc(c.visual || "")}</p>
+      <p><b>Why it fits:</b> ${esc(c.why || "")}</p>
+      <div class="btnrow">${copyBtn(`POSTER: ${c.title}\nHeadline: ${c.headline}\nPattern: ${c.pattern}\nLayout: ${c.layout}\nColors: ${(c.colors || []).join(", ")}\nVisual: ${c.visual}`, "Copy concept")}</div>
+    </div>`).join("");
+  $("captions").innerHTML = (data.captions || []).map((c, i) => `
+    <div class="captionbox">
+      <p>${esc(c.text || "")}</p>
+      <div class="tags">${(c.hashtags || []).join(" ")}</div>
+      <div class="btnrow">${copyBtn(`${c.text}\n\n${(c.hashtags || []).join(" ")}`, "Copy caption")}</div>
+    </div>`).join("");
+  $("weekplan").innerHTML = `<table class="plan"><tr><th>Day</th><th>Idea</th><th>Format</th></tr>` +
+    (data.weekPlan || []).map(d => `<tr><td><b>${esc(d.day)}</b></td><td>${esc(d.idea)}</td><td>${esc(d.format)}</td></tr>`).join("") + `</table>`;
+  $("results-card").scrollIntoView({ behavior: "smooth" });
+}
+$("copy-all").addEventListener("click", async e => {
+  const text = $("results-card").innerText;
+  try { await navigator.clipboard.writeText(text); e.target.textContent = "Copied ✓"; setTimeout(() => e.target.textContent = "Copy everything as text", 1500); }
+  catch { showError("Copy failed — select the text manually."); }
+});
+$("start-over").addEventListener("click", () => {
+  $("results-card").classList.add("hidden");
+  logEl.classList.remove("show"); logEl.innerHTML = "";
+  urlEl.value = ""; manualEl.value = "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* ---------- main flow ---------- */
+$("analyze").addEventListener("click", async () => {
+  hideError(); logEl.classList.remove("show"); logEl.innerHTML = "";
+  $("results-card").classList.add("hidden");
+  const key = keyEl.value.trim();
+  const provider = providerEl.value;
+  const model = modelEl.value.trim();
+  const base = baseEl.value.trim();
+  const url = urlEl.value.trim();
+  const manual = manualEl.value.trim();
+  if (!key) { showError("Paste your API key in Step 1 first (or use 'Preview with sample output' to see it work without a key)."); return; }
+  if (!url && !manual) { showError("Paste a website URL, or paste the site text manually."); return; }
+  if (provider === "openai" && !base) { showError("For OpenAI-compatible, enter the API base URL too (e.g. https://api.openai.com/v1)."); return; }
+  const btn = $("analyze"); btn.disabled = true; btn.textContent = "Working…";
+  try {
+    let siteText = "";
+    if (manual) { log("✓ Using your pasted site text.", "ok"); siteText = manual.slice(0, 6000); }
+    else {
+      log("→ Reading " + url + " …", "dim");
+      try {
+        siteText = await fetchSiteText(url);
+        log("✓ Site read (" + siteText.length.toLocaleString() + " characters).", "ok");
+      } catch (err) {
+        log("✗ Could not read the site automatically: " + err.message, "err");
+        showError("Could not read that site automatically (it may block readers, or the free reader is rate-limited). Paste the site's text in the manual box below and press Generate again.");
+        document.querySelector("#manual-wrap").open = true;
+        return;
+      }
+    }
+    log("→ Analysing with " + PROVIDERS[provider].label + " (" + model + ") …", "dim");
+    const userPrompt = "Website URL: " + (url || "(text pasted manually)") + "\n\nWebsite content:\n" + siteText + "\n\nGenerate the poster concepts, captions and week plan in the JSON format from the system prompt.";
+    let raw;
+    if (provider === "gemini") raw = await callGemini(key, model, SYSTEM_PROMPT, userPrompt);
+    else raw = await callOpenAICompatible(provider === "groq" ? PROVIDERS.groq.base : base, key, model, SYSTEM_PROMPT, userPrompt);
+    const data = parseJSON(raw);
+    if (!data.posterConcepts || data.posterConcepts.length < 5) throw new Error("The model returned an incomplete result. Try again.");
+    log("✓ Done — 5 poster concepts, 3 captions, 7-day plan.", "ok");
+    renderResults(data, false);
+  } catch (err) {
+    console.error(err);
+    showError("Something went wrong: " + err.message);
+  } finally { btn.disabled = false; btn.textContent = "✦ Generate poster ideas"; }
+});
+
+/* ---------- sample preview (real output, no key needed) ---------- */
+$("sample").addEventListener("click", async () => {
+  hideError();
+  try {
+    const res = await fetch("sample-output.json");
+    if (!res.ok) throw new Error("sample-output.json missing");
+    const data = await res.json();
+    renderResults(data, true);
+  } catch (err) {
+    showError("Sample output could not be loaded: " + err.message);
+  }
+});
+
+loadConfig();
+</script>
+</body>
+</html>

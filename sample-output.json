@@ -1,0 +1,145 @@
+{
+  "brand": {
+    "name": "Md Ayub Mondol",
+    "whatTheyDo": "Creative professional with 7+ years of experience specializing in Graphic Design, Brand Identity, Motion Graphics, Video Editing, and AI-Powered Visual Creation.",
+    "services": [
+      "Graphic Design & Branding",
+      "Motion Graphics & Video Editing",
+      "AI-Powered Visual Creation",
+      "Social Media Post Design"
+    ],
+    "audience": "Brands and businesses worldwide seeking professional design and visual storytelling.",
+    "tone": "Professional, proactive, efficient, modern",
+    "website": "https://mdayubmondol.com"
+  },
+  "posterConcepts": [
+    {
+      "title": "7+ Years Experience",
+      "headline": "SEVEN YEARS OF PURPOSEFUL DESIGN",
+      "pattern": "Oversized condensed headline over a duotone photo",
+      "layout": "Massive stacked condensed headline covering the top two-thirds. Duotone photo backdrop, with client statement badge and website URL at the bottom.",
+      "colors": [
+        "#0D0D0D",
+        "#FFFFFF",
+        "#FF3300"
+      ],
+      "visual": "Duotone dark blue and red photo of a professional design workspace.",
+      "why": "Highlights the founder's 7+ years of proven industry experience using a strong, authoritative layout."
+    },
+    {
+      "title": "AI-Powered Visuals",
+      "headline": "THE FUTURE OF VISUAL CREATION",
+      "pattern": "Cinematic dark with neon glow",
+      "layout": "Dark background with a glowing neon headline in the center. Modern tech badge in top right, footer website link centered at the bottom.",
+      "colors": [
+        "#05050A",
+        "#00FF66",
+        "#FFFFFF"
+      ],
+      "visual": "Subtle neon glowing lines representing AI digital artwork creation.",
+      "why": "Focuses on the specialized AI-powered visual creation service stated on the website."
+    },
+    {
+      "title": "Brand Identity Focus",
+      "headline": "BUILDING DISTINCT BRAND IDENTITIES",
+      "pattern": "Editorial minimal on cream",
+      "layout": "Off-white minimal canvas with left-aligned headline stacked over three lines. Clean, high-contrast text footer with email and website URL.",
+      "colors": [
+        "#F9F6F0",
+        "#111111",
+        "#8C7A6B"
+      ],
+      "visual": "Minimalist geometric layout displaying clean design composition rules.",
+      "why": "Emphasizes corporate and brand identity services for global businesses in a high-end editorial format."
+    },
+    {
+      "title": "Global Reach Proof",
+      "headline": "TRUSTED BY OVER 100 BRANDS",
+      "pattern": "Tilted diagonal composition with grain",
+      "layout": "Diagonal split composition at a 15-degree angle with grainy texture background. Hero headline tilted across the fold with URL footer.",
+      "colors": [
+        "#121212",
+        "#FFD700",
+        "#F4F4F4"
+      ],
+      "visual": "Textured dark background with subtle geometric grid elements.",
+      "why": "Leverages the site's stated track record of working with over 100 brands and businesses worldwide."
+    },
+    {
+      "title": "Full Spectrum Visuals",
+      "headline": "TURNING IDEAS INTO IMPACTFUL VISUALS",
+      "pattern": "Gradient mesh",
+      "layout": "Vibrant gradient mesh backdrop with heavy black typography stacked in the center. Service pill badge near the bottom above the website footer.",
+      "colors": [
+        "#6B21A8",
+        "#3B82F6",
+        "#0F172A"
+      ],
+      "visual": "Smooth digital purple and blue fluid gradient background.",
+      "why": "Translates the primary slogan from the site into a modern, dynamic visual aesthetic."
+    }
+  ],
+  "captions": [
+    {
+      "text": "Combining 7+ years of experience in graphic design, motion graphics, and AI visual creation. Helping over 100 global brands build distinctive visual identities and engaging visual content. Explore services at mdayubmondol.com.",
+      "hashtags": [
+        "#GraphicDesign",
+        "#BrandIdentity",
+        "#MotionGraphics"
+      ]
+    },
+    {
+      "text": "AI-powered visual creation brings innovation and speed to modern brand storytelling. From full design systems to engaging social media content, strategic visual execution drives clear results. Learn more at mdayubmondol.com.",
+      "hashtags": [
+        "#AIVisuals",
+        "#VisualDesign",
+        "#DesignStrategy"
+      ]
+    },
+    {
+      "text": "Proactive collaboration and clear communication lead to high-impact designs. Delivering efficient, quality visual solutions for growing businesses around the world. Contact hellomdayub@gmail.com for upcoming projects.",
+      "hashtags": [
+        "#DesignServices",
+        "#SocialMediaDesign",
+        "#VisualStorytelling"
+      ]
+    }
+  ],
+  "weekPlan": [
+    {
+      "day": "Day 1",
+      "idea": "Showcase the 7+ years milestone and global brand client count.",
+      "format": "Poster 4:5"
+    },
+    {
+      "day": "Day 2",
+      "idea": "Highlight AI-powered visual creation capabilities and tech-driven workflow.",
+      "format": "Reel 9:16"
+    },
+    {
+      "day": "Day 3",
+      "idea": "Display brand identity design services and client case study.",
+      "format": "Carousel"
+    },
+    {
+      "day": "Day 4",
+      "idea": "Feature motion graphics and video editing project highlights.",
+      "format": "Reel 9:16"
+    },
+    {
+      "day": "Day 5",
+      "idea": "Highlight verified client testimonial on efficiency and proactive communication.",
+      "format": "Poster 4:5"
+    },
+    {
+      "day": "Day 6",
+      "idea": "Breakdown of social media post design services and visual strategy.",
+      "format": "Carousel"
+    },
+    {
+      "day": "Day 7",
+      "idea": "Call to action for creative collaboration and new project inquiries.",
+      "format": "Poster 4:5"
+    }
+  ]
+}
