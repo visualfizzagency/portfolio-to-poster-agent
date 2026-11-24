@@ -4,6 +4,8 @@ Paste any portfolio or website URL. The agent reads the site, understands the br
 
 Free forever. **Bring your own API key** — Gemini, Groq, or any OpenAI-compatible provider. No server, no sign-up, no auto-posting.
 
+[![☕ Support Me](https://img.shields.io/badge/%E2%98%95_Support_Me-FFDD00?style=for-the-badge)](https://www.supportkori.com/hellomdayub)
+
 ## Try it
 
 Open `index.html` in a browser (or `python3 -m http.server` in this folder). No key? Press **"Preview with sample output"** to see a real generated kit for `mdayubmondol.com`.
